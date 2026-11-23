@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结算单</title>
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --primary-hover: #1e40af;
+            --primary-light: #eff6ff;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #f1f5f9;
+            color: var(--slate-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航栏 */
+        .top-navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--slate-200);
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.3);
+        }
+
+        .brand-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--slate-900);
+            letter-spacing: -0.3px;
+        }
+
+        .brand-desc {
+            font-size: 12px;
+            color: var(--slate-500);
+            margin-top: 2px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            border: 1px solid transparent;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-default {
+            background-color: #ffffff;
+            border-color: var(--slate-300);
+            color: var(--slate-700);
+        }
+        .btn-default:hover {
+            background-color: var(--slate-100);
+            border-color: var(--slate-400);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12.5px;
+        }
+
+        /* 主体布局：宽屏集中工作台 */
+        .workbench-container {
+            max-width: 1420px;
+            margin: 20px auto 40px auto;
+            width: 95%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 卡片容器 */
+        .card-box {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow-sm);
+            padding: 22px 24px;
+        }
+
+        /* 维修单号置顶醒目条 */
+        .order-no-pinned-bar {
+            background: linear-gradient(135deg, #eff6ff, #f8fafc);
+            border: 1.5px solid #bfdbfe;
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .order-no-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .order-no-badge {
+            background-color: #1d4ed8;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .order-no-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-no-input {
+            height: 36px;
+            font-size: 17px;
+            font-weight: 800;
+            color: #1e3a8a;
+            border: 1px solid #93c5fd;
+            border-radius: 6px;
+            padding: 0 12px;
+            width: 250px;
+            background-color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .order-date-tag {
+            font-size: 13px;
+            color: var(--slate-600);
+        }
+
+        .section-header-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: var(--slate-800);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        .form-input, .form-select {
+            height: 36px;
+            padding: 0 10px;
+            border: 1px solid var(--slate-300);
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: var(--slate-800);
+            background-color: #ffffff;
+            transition: all 0.15s ease;
+            width: 100%;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+        }
+
+        /* 车牌输入组合器（省份 + 车牌号码） */
+        .plate-combo-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .plate-combo-wrap select {
+            width: 84px;
+            flex-shrink: 0;
+        }
+
+        /* 颜色输入组合器（下拉选择 + 键盘手动输入） */
+        .color-combo-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .color-combo-wrap select {
+            width: 140px;
+            flex-shrink: 0;
+            height: 36px;
+            border: 1px solid var(--slate-300);
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 13px;
+            background-color: #f8fafc;
+        }
+
+        /* 项目明细表格 */
+        .table-scroll-hint {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+        }
+
+        .items-editor-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .items-editor-table th {
+            background-color: var(--slate-100);
+            color: var(--slate-700);
+            font-weight: 600;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--slate-200);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .items-editor-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--slate-200);
+            vertical-align: middle;
+        }
+
+        .items-editor-table tr:hover {
+            background-color: var(--slate-50);
+        }
+
+        .cell-input {
+            width: 100%;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid var(--slate-300);
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--slate-800);
+        }
+
+        .cell-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+        }
+
+        /* 工时上下步进器（每次 0.5 工时） */
+        .labor-stepper {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .labor-stepper .cell-input {
+            min-width: 48px;
+            flex: 1;
+            padding: 0 2px;
+            text-align: center;
+        }
+
+        .labor-stepper-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .labor-step-btn {
+            width: 18px;
+            height: 15px;
+            padding: 0;
+            font-size: 8px;
+            line-height: 1;
+            border: 1px solid var(--slate-300);
+            border-radius: 3px;
+            background-color: var(--slate-100);
+            color: var(--slate-600);
+            cursor: pointer;
+        }
+
+        .labor-step-btn:hover {
+            background-color: var(--primary-light);
+            border-color: #93c5fd;
+            color: var(--primary);
+        }
+
+        .cell-subtotal {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 13.5px;
+            text-align: right;
+            padding-right: 6px;
+            white-space: nowrap;
+        }
+
+        .table-action-btns {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: var(--slate-500);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--slate-200);
+            color: var(--slate-800);
+        }
+
+        .icon-btn-danger:hover {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* 汇总金额卡片 */
+        .total-summary-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: var(--radius-md);
+            padding: 18px 24px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+
+        .total-summary-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .total-summary-label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .total-summary-chinese {
+            font-size: 14.5px;
+            color: #cbd5e1;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .total-summary-right {
+            text-align: right;
+        }
+
+        .total-price-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #38bdf8;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        /* 轻提示 */
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 手机 / 平板适配 ===== */
+        @media screen and (max-width: 900px) {
+            .top-navbar {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 10px 16px;
+            }
+            .brand-area {
+                flex: 1 1 100%;
+            }
+            .brand-desc {
+                font-size: 11.5px;
+            }
+            .top-actions {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                gap: 8px;
+            }
+            .workbench-container {
+                width: 96%;
+                margin: 14px auto 28px;
+                gap: 14px;
+            }
+            .card-box {
+                padding: 16px;
+            }
+            .form-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .items-editor-table {
+                table-layout: fixed;
+                min-width: 940px;
+            }
+            .table-scroll-hint {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--slate-500);
+                font-size: 12px;
+                text-align: right;
+            }
+            .order-no-pinned-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .order-no-left {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .order-no-input-wrap {
+                flex: 1 1 100%;
+            }
+            .order-no-input {
+                flex: 1;
+                width: auto;
+                min-width: 0;
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            .top-navbar {
+                position: static;
+                padding: 10px 12px;
+            }
+            .brand-icon {
+                width: 34px;
+                height: 34px;
+            }
+            .brand-title {
+                font-size: 16px;
+                line-height: 1.3;
+            }
+            .brand-desc {
+                display: none;
+            }
+            .top-actions {
+                justify-content: stretch;
+            }
+            .top-actions .btn {
+                flex: 1 1 calc(33.333% - 6px);
+                padding: 8px 4px;
+                font-size: 12px;
+                gap: 4px;
+            }
+            .top-actions .btn svg {
+                width: 15px;
+                height: 15px;
+            }
+            .top-actions .btn-primary {
+                flex: 1 1 100%;
+            }
+            .workbench-container {
+                width: calc(100% - 20px);
+                margin: 12px auto 24px;
+                gap: 12px;
+            }
+            .card-box {
+                padding: 14px 12px;
+                border-radius: 10px;
+            }
+            .section-header-title {
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 14.5px;
+            }
+            .order-no-pinned-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 10px 12px;
+                margin-bottom: 16px;
+            }
+            .order-no-left {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .order-no-input-wrap {
+                flex: 1 1 100%;
+            }
+            .order-no-input {
+                flex: 1;
+                width: auto;
+                min-width: 0;
+                height: 38px;
+                font-size: 16px;
+            }
+            .order-date-tag {
+                font-size: 12px;
+                line-height: 1.6;
+            }
+            .form-grid-4,
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .form-input,
+            .form-select,
+            .cell-input {
+                font-size: 16px;
+            }
+            .form-input,
+            .form-select {
+                height: 40px;
+            }
+            .cell-input {
+                height: 34px;
+            }
+            .color-combo-wrap select {
+                width: 130px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .plate-combo-wrap select {
+                height: 38px;
+            }
+            .labor-stepper .cell-input {
+                padding: 0 2px;
+            }
+            .labor-step-btn {
+                width: 22px;
+                height: 16px;
+                font-size: 9px;
+            }
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+            }
+            .icon-btn {
+                padding: 4px;
+            }
+            .icon-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+            .total-summary-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 14px 16px;
+            }
+            .total-summary-chinese {
+                font-size: 13px;
+            }
+            .total-price-value {
+                font-size: 26px;
+            }
+            .total-summary-right {
+                text-align: left;
+            }
+            .toast-msg {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                text-align: center;
+            }
+        }
+
+        @media screen and (max-width: 380px) {
+            .top-actions .btn {
+                flex: 1 1 calc(50% - 4px);
+            }
+            .top-actions .btn-primary {
+                flex: 1 1 100%;
+            }
+        }
+
+        /* 纯打印时呼出的 A4 正式版式（屏幕编辑时完全隐藏） */
+        #printableQuotation {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .top-navbar, .workbench-container, .toast-msg {
+                display: none !important;
+            }
+            #printableQuotation {
+                display: block !important;
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 12mm 14mm !important;
+                margin: 0 !important;
+                color: #000000 !important;
+                font-family: "SimSun", "宋体", "Microsoft YaHei", serif;
+            }
+            .a4-header {
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .a4-company-name {
+                font-size: 21px;
+                font-weight: 900;
+                letter-spacing: 1.5px;
+                font-family: "Microsoft YaHei", sans-serif;
+                margin-bottom: 3px;
+            }
+            .a4-doc-title {
+                font-size: 17.5px;
+                font-weight: 900;
+                font-family: "Microsoft YaHei", sans-serif;
+                letter-spacing: 3px;
+                display: inline-block;
+                margin-bottom: 8px;
+            }
+            .a4-meta-bar {
+                display: flex;
+                justify-content: space-between;
+                font-size: 11px;
+                font-family: "Microsoft YaHei", sans-serif;
+                margin-bottom: 8px;
+            }
+            .a4-info-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+                font-size: 11px;
+            }
+            .a4-info-table td {
+                border: 1px solid #333333;
+                padding: 5px 8px;
+                line-height: 1.35;
+            }
+            .a4-info-table .label-cell {
+                background-color: #f3f4f6;
+                font-weight: bold;
+                width: 13%;
+                text-align: center;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            .a4-info-table .value-cell {
+                width: 20%;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            .a4-items-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+            .a4-items-table th {
+                border: 1px solid #333333;
+                background-color: #f3f4f6;
+                font-weight: bold;
+                padding: 6px 4px;
+                text-align: center;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            .a4-items-table td {
+                border: 1px solid #333333;
+                padding: 5px 6px;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            .a4-total-row td {
+                font-weight: bold;
+                background-color: #f9fafb;
+                padding: 6px 8px;
+            }
+            .a4-settle-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10.5px;
+                margin-bottom: 14px;
+                font-family: "Microsoft YaHei", sans-serif;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .a4-settle-table td {
+                border: 1px solid #333333;
+                padding: 5px 8px;
+            }
+            .a4-settle-table .settle-label {
+                background-color: #f3f4f6;
+                font-weight: bold;
+                text-align: center;
+                white-space: nowrap;
+                width: 12%;
+            }
+            .a4-footer-blocks {
+                display: flex;
+                justify-content: space-between;
+                gap: 24px;
+                font-size: 10px;
+                line-height: 1.55;
+                margin-bottom: 14px;
+                font-family: "Microsoft YaHei", sans-serif;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .a4-footer-left {
+                width: 56%;
+            }
+            .a4-footer-right {
+                width: 40%;
+            }
+            .a4-footer-company {
+                font-size: 11px;
+                font-weight: bold;
+                margin-bottom: 3px;
+            }
+            .a4-footer-contact {
+                display: flex;
+                gap: 14px;
+                margin-bottom: 6px;
+            }
+            .a4-footer-contact span {
+                flex: 1;
+            }
+            .a4-warranty div {
+                margin-top: 1px;
+            }
+            .a4-signatures-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+                margin-top: 24px;
+                font-size: 11.5px;
+                font-family: "Microsoft YaHei", sans-serif;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .sig-line {
+                display: flex;
+                align-items: flex-end;
+                gap: 4px;
+            }
+            .sig-underline {
+                flex: 1;
+                border-bottom: 1px solid #333333;
+                height: 16px;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部操作导航 -->
+    <header class="top-navbar">
+        <div class="brand-area">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+                    <circle cx="6.5" cy="16.5" r="2.5"/>
+                    <circle cx="16.5" cy="16.5" r="2.5"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="brand-title">北京田丰汽车修理有限责任公司</h1>
+                <p class="brand-desc">车辆维修保养报价系统 · 智能算价 · 规范工单 · 一键导出打印</p>
+            </div>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-default" onclick="saveDraft()" title="暂存当前录入内容至本地">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                暂存草稿
+            </button>
+            <button class="btn btn-default" onclick="loadSampleData()" title="载入一份完整测试数据">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                载入演示示例
+            </button>
+            <button class="btn btn-default" onclick="resetForm()" title="清空全部输入">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                重置清空
+            </button>
+            <button class="btn btn-primary" onclick="printQuotation()" title="直接打印或在打印预览中选择【另存为PDF】">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                打印 / 导出为 PDF (A4)
+            </button>
+        </div>
+    </header>
+
+    <!-- 工作台主体（居中宽屏单列排版，无需右侧常驻渲染） -->
+    <main class="workbench-container">
+
+        <!-- 1. 车辆基本信息（维修单号置顶） -->
+        <div class="card-box">
+            
+            <!-- 维修单号置顶醒目栏 -->
+            <div class="order-no-pinned-bar">
+                <div class="order-no-left">
+                    <span class="order-no-badge">维修单号</span>
+                    <div class="order-no-input-wrap">
+                        <input type="text" id="quoteNo" class="order-no-input" placeholder="例如：WX-20261123-001">
+                        <button class="btn btn-default btn-sm" onclick="generateNewOrderNo()" title="重新自动生成单号">重新生成</button>
+                    </div>
+                </div>
+                <div class="order-date-tag">
+                    业务类型：<strong>车辆维修保养</strong> &nbsp;|&nbsp; 
+                    结算日期：<strong id="displayQuoteDate"></strong>
+                </div>
+            </div>
+
+            <div class="section-header-title">
+                <span>车辆基础档案信息</span>
+                <span style="font-size: 12px; font-weight: normal; color: var(--slate-500);">车型将自动同步填入下方明细列表</span>
+            </div>
+
+            <!-- 车辆基本字段网格 -->
+            <div class="form-grid-4" style="margin-bottom: 14px;">
+                <div class="form-group">
+                    <label class="form-label">车牌号码 *</label>
+                    <div class="plate-combo-wrap">
+                        <select id="plateProvince" class="form-select">
+                            <option value=""></option>
+                            <option value="京">京</option>
+                            <option value="津">津</option>
+                            <option value="冀">冀</option>
+                            <option value="晋">晋</option>
+                            <option value="蒙">蒙</option>
+                            <option value="辽">辽</option>
+                            <option value="吉">吉</option>
+                            <option value="黑">黑</option>
+                            <option value="沪">沪</option>
+                            <option value="苏">苏</option>
+                            <option value="浙">浙</option>
+                            <option value="皖">皖</option>
+                            <option value="闽">闽</option>
+                            <option value="赣">赣</option>
+                            <option value="鲁">鲁</option>
+                            <option value="豫">豫</option>
+                            <option value="鄂">鄂</option>
+                            <option value="湘">湘</option>
+                            <option value="粤">粤</option>
+                            <option value="桂">桂</option>
+                            <option value="琼">琼</option>
+                            <option value="渝">渝</option>
+                            <option value="川">川</option>
+                            <option value="贵">贵</option>
+                            <option value="云">云</option>
+                            <option value="藏">藏</option>
+                            <option value="陕">陕</option>
+                            <option value="甘">甘</option>
+                            <option value="青">青</option>
+                            <option value="宁">宁</option>
+                            <option value="新">新</option>
+                        </select>
+                        <input type="text" id="carPlate" class="form-input" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">车型型号 * (自动同步到项目)</label>
+                    <input type="text" id="carModel" class="form-input" oninput="onCarModelChange(this.value)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">车架号 (VIN)</label>
+                    <input type="text" id="carVin" class="form-input" maxlength="17">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">车身颜色 (支持下拉选择 + 自由手输)</label>
+                    <div class="color-combo-wrap">
+                        <select onchange="onColorSelectChange(this.value)">
+                            <option value="">快速选择颜色...</option>
+                            <option value="白色">白色</option>
+                            <option value="矿石白">矿石白</option>
+                            <option value="珍珠白">珍珠白</option>
+                            <option value="黑色">黑色</option>
+                            <option value="极夜黑">极夜黑</option>
+                            <option value="银灰色">银灰色</option>
+                            <option value="钛灰色">钛灰色</option>
+                            <option value="深灰色">深灰色</option>
+                            <option value="中国红">中国红</option>
+                            <option value="深蓝色">深蓝色</option>
+                            <option value="香槟金">香槟金</option>
+                            <option value="墨绿色">墨绿色</option>
+                            <option value="棕色">棕色</option>
+                        </select>
+                        <input type="text" id="carColor" class="form-input" placeholder="可手动修改颜色">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid-4">
+                <div class="form-group">
+                    <label class="form-label">进厂日期 *</label>
+                    <input type="date" id="dateIn" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">结算日期 *</label>
+                    <input type="date" id="dateOut" class="form-input" onchange="syncSettlementDateDisplay()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">当前行驶里程</label>
+                    <input type="text" id="carMileage" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">车主姓名 / 手机号</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="ownerName" class="form-input" placeholder="车主姓名" style="width: 40%;">
+                        <input type="text" id="ownerPhone" class="form-input" placeholder="联系手机号" style="width: 60%;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 2. 维修保养项目与配件报价清单（新增车型列、工时列） -->
+        <div class="card-box">
+            <div class="section-header-title">
+                <span>维修项目与配件报价明细（含车型列、工时列）</span>
+                <button class="btn btn-primary btn-sm" onclick="addNewRow()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    + 手动新增一行
+                </button>
+            </div>
+
+            <!-- 明细表格 -->
+            <div class="table-scroll-hint">左右滑动查看完整表格 →</div>
+            <div class="table-responsive">
+                <table class="items-editor-table" id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 44px; text-align: center;">序号</th>
+                            <th style="width: 200px; min-width: 180px;">项目 / 配件名称</th>
+                            <th style="width: 150px;">车型 (自动填入)</th>
+                            <th style="width: 105px; text-align: center;">工时</th>
+                            <th style="width: 90px; text-align: right;">单价 (元)</th>
+                            <th style="width: 100px; text-align: center;">数量</th>
+                            <th style="width: 60px; text-align: center;">单位</th>
+                            <th style="width: 95px; text-align: right;">小计 (元)</th>
+                            <th style="width: 96px; text-align: center;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        <!-- 行内容动态渲染 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 实时汇总总计 -->
+            <div class="total-summary-card">
+                <div class="total-summary-left">
+                    <span class="total-summary-label">实时报价总金额 (大写金额同步换算)：</span>
+                    <span class="total-summary-chinese" id="totalChineseText">人民币：零元整</span>
+                </div>
+                <div class="total-summary-right">
+                    <span style="font-size: 15px; color: #94a3b8; margin-right: 4px;">总计：¥</span>
+                    <span class="total-price-value" id="totalNumberText">0.00</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 专用打印容器（屏幕不显示，仅在 window.print() 时呈现标准 A4 格式） -->
+    <div id="printableQuotation">
+        <!-- 抬头 -->
+        <div class="a4-header">
+            <div class="a4-company-name" id="viewShopName">北京田丰汽车修理有限责任公司</div>
+            <div>
+                <span class="a4-doc-title">结算单</span>
+            </div>
+        </div>
+
+        <!-- 维修单号与日期 -->
+        <div class="a4-meta-bar">
+            <span>维修单号：<strong id="viewQuoteNo" style="font-size: 13px; color: #1e3a8a;"></strong></span>
+            <span>结算日期：<strong id="viewQuoteDate"></strong></span>
+        </div>
+
+        <!-- 车辆基本信息标准网格表（含车架号VIN，移除报价人） -->
+        <table class="a4-info-table">
+            <tr>
+                <td class="label-cell">车牌号码</td>
+                <td class="value-cell"><strong id="viewCarPlate" style="font-size: 12.5px; color: #1e40af;"></strong></td>
+                <td class="label-cell">车型型号</td>
+                <td class="value-cell" id="viewCarModel"></td>
+                <td class="label-cell">当前里程</td>
+                <td class="value-cell" id="viewCarMileage"></td>
+            </tr>
+            <tr>
+                <td class="label-cell">车架号(VIN)</td>
+                <td class="value-cell" id="viewCarVin"></td>
+                <td class="label-cell">车身颜色</td>
+                <td class="value-cell" id="viewCarColor"></td>
+                <td class="label-cell">车主姓名</td>
+                <td class="value-cell" id="viewOwnerName"></td>
+            </tr>
+            <tr>
+                <td class="label-cell">联系电话</td>
+                <td class="value-cell" id="viewOwnerPhone"></td>
+                <td class="label-cell">进厂日期</td>
+                <td class="value-cell" id="viewDateIn"></td>
+                <td class="label-cell">结算日期</td>
+                <td class="value-cell" id="viewDateOut"></td>
+            </tr>
+            <tr>
+                <td class="label-cell">承修单位</td>
+                <td class="value-cell" colspan="5" id="viewShopNameSmall">北京田丰汽车修理有限责任公司</td>
+            </tr>
+        </table>
+
+        <!-- 明细清单（含车型列、工时列） -->
+        <table class="a4-items-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">序号</th>
+                    <th style="text-align: left; padding-left: 6px;">维修项目 / 配件名称</th>
+                    <th style="width: 110px; text-align: center;">车型</th>
+                    <th style="width: 45px; text-align: center;">工时</th>
+                    <th style="width: 45px; text-align: center;">数量</th>
+                    <th style="width: 40px; text-align: center;">单位</th>
+                    <th style="width: 65px; text-align: right;">单价(元)</th>
+                    <th style="width: 75px; text-align: right; padding-right: 6px;">小计(元)</th>
+                </tr>
+            </thead>
+            <tbody id="viewItemsTableBody">
+                <!-- 打印时渲染 -->
+            </tbody>
+            <tfoot>
+                <tr class="a4-total-row">
+                    <td colspan="6" style="text-align: right; font-size: 11.5px;">材料费小计：</td>
+                    <td colspan="2" style="text-align: right; font-size: 12.5px; font-weight: bold; color: #b91c1c; padding-right: 6px; white-space: nowrap;" id="viewTotalNumber"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- 结算与收款信息 -->
+        <table class="a4-settle-table">
+            <tr>
+                <td class="settle-label">付款方式：</td>
+                <td>现金</td>
+                <td class="settle-label">发票类型：</td>
+                <td>收据</td>
+                <td class="settle-label">应收金额：</td>
+                <td style="text-align: right;" id="viewReceivable"></td>
+            </tr>
+            <tr>
+                <td class="settle-label">税　额：</td>
+                <td>¥ 0.00</td>
+                <td class="settle-label">优　惠：</td>
+                <td>¥ 0.00</td>
+                <td class="settle-label">结算金额：</td>
+                <td style="text-align: right;" id="viewSettleAmount"></td>
+            </tr>
+            <tr>
+                <td class="settle-label">结算大写：</td>
+                <td colspan="3" style="color: #b91c1c; background-color: #ffffff;" id="viewTotalChinese"></td>
+                <td class="settle-label">本次结款：</td>
+                <td style="text-align: right;" id="viewPaidAmount"></td>
+            </tr>
+        </table>
+
+        <!-- 公司与保修说明 -->
+        <div class="a4-footer-blocks">
+            <div class="a4-footer-left">
+                <div class="a4-footer-company">北京田丰汽车修理有限责任公司</div>
+                <div class="a4-footer-contact">
+                    <span>地址：</span>
+                    <span>电话：</span>
+                    <span>传真：</span>
+                </div>
+                <div class="a4-warranty">
+                    <div>根据汽车维修行业管理部门规定：</div>
+                    <div>小修或日常维护保修期限：三天或500公里</div>
+                    <div>发动机总成大修保修期限：三个月或10000公里</div>
+                    <div>其它总成大修保修期限：一个月或5000公里</div>
+                    <div>说明：■厂家结算　◆公司结算　●客户结算　▲公司客户对半结算</div>
+                </div>
+            </div>
+            <div class="a4-footer-right">
+                <div>※零件损坏是否更换：□是　□否</div>
+                <div>根据汽车维修行业管理部门的规定：</div>
+                <div>本人对本单以上内容已确认，</div>
+                <div>并愿按上述要求进行维修和支付有关费用，</div>
+                <div>且已将车内现金、票据及贵重物品取走。</div>
+            </div>
+        </div>
+
+        <!-- 签字栏 -->
+        <div class="a4-signatures-grid">
+            <div class="sig-line">
+                <span>检 验 员：</span>
+                <div class="sig-underline"></div>
+            </div>
+            <div class="sig-line">
+                <span>结 算 员：</span>
+                <div class="sig-underline"></div>
+            </div>
+            <div class="sig-line">
+                <span>客户签字：</span>
+                <div class="sig-underline"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部轻提示 -->
+    <div id="toast" class="toast-msg"></div>
+
+    <script>
+        // 核心数据模型：项目明细
+        let quoteItems = [];
+
+        // 固定公司信息（页面不再提供设置项，打印与导出统一使用）
+        const SHOP_INFO = {
+            name: '北京田丰汽车修理有限责任公司'
+        };
+
+        // 初始化日期与维修单号
+        function initDatesAndOrderNo() {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+
+            const formatYMD = (d) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            const inInput = document.getElementById('dateIn');
+            const outInput = document.getElementById('dateOut');
+            if (!inInput.value) inInput.value = formatYMD(today);
+            if (!outInput.value) outInput.value = formatYMD(tomorrow);
+
+            syncSettlementDateDisplay();
+
+            // 维修单号自动生成
+            const quoteNoInput = document.getElementById('quoteNo');
+            if (!quoteNoInput.value) {
+                quoteNoInput.value = buildOrderNo();
+            }
+        }
+
+        // 将“结算日期”同步显示到顶部
+        function syncSettlementDateDisplay() {
+            const raw = document.getElementById('dateOut').value;
+            const display = document.getElementById('displayQuoteDate');
+            if (!raw) {
+                display.innerText = '';
+                return;
+            }
+            const [year, month, day] = raw.split('-');
+            display.innerText = `${Number(year)}年${Number(month)}月${Number(day)}日`;
+        }
+
+        // 按当前日期生成维修单号
+        function buildOrderNo() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const randomSuffix = String(Math.floor(Math.random() * 900) + 100);
+            return `WX-${year}${month}${day}-${randomSuffix}`;
+        }
+
+        // 重新生成维修单号
+        function generateNewOrderNo() {
+            const newNo = buildOrderNo();
+            document.getElementById('quoteNo').value = newNo;
+            showToast(`已生成新维修单号：${newNo}`);
+        }
+
+        // 车身颜色下拉改变时写入输入框
+        function onColorSelectChange(val) {
+            if (val) {
+                document.getElementById('carColor').value = val;
+            }
+        }
+
+        // 组合完整车牌号（省份简称 + 车牌号码）
+        function getPlateValue() {
+            const prefix = document.getElementById('plateProvince').value;
+            const number = document.getElementById('carPlate').value.trim();
+            return prefix + number;
+        }
+
+        // 将完整车牌号拆分回两个输入框（用于恢复草稿）
+        function splitPlateToInputs(plate) {
+            const provinceSelect = document.getElementById('plateProvince');
+            const plateInput = document.getElementById('carPlate');
+            const value = (plate || '').trim();
+            const isProvinceMatch = /^[\u4e00-\u9fa5]/.test(value)
+                && Array.from(provinceSelect.options).some(opt => opt.value === value.slice(0, 1));
+
+            if (isProvinceMatch) {
+                provinceSelect.value = value.slice(0, 1);
+                plateInput.value = value.slice(1).replace(/^·/, '').toUpperCase();
+            } else {
+                provinceSelect.value = '';
+                plateInput.value = value.toUpperCase();
+            }
+        }
+
+        // 当车辆基本信息的车型改变时，自动同步至所有项目的车型列
+        function onCarModelChange(newModel) {
+            quoteItems.forEach((item, index) => {
+                item.model = newModel;
+                const modelInput = document.getElementById(`item-model-${index}`);
+                if (modelInput) {
+                    modelInput.value = newModel;
+                }
+            });
+        }
+
+        // 获取当前车辆基本信息的车型
+        function getCurrentCarModel() {
+            return document.getElementById('carModel').value || '';
+        }
+
+        // 添加新空白行
+        function addNewRow(item = {}) {
+            const defaultModel = getCurrentCarModel();
+            quoteItems.push({
+                model: item.model || defaultModel,
+                name: item.name || '',
+                spec: item.spec || '',
+                labor: item.labor || '',
+                price: item.price !== undefined ? item.price : '',
+                qty: typeof item.qty === 'number' ? item.qty : 1,
+                unit: item.unit || '',
+                remark: item.remark || ''
+            });
+            renderTable();
+            calculateTotals();
+        }
+
+        // 删除指定索引的行
+        function deleteRow(index) {
+            quoteItems.splice(index, 1);
+            renderTable();
+            calculateTotals();
+        }
+
+        // 上移指定行
+        function moveRowUp(index) {
+            if (index <= 0) return;
+            const temp = quoteItems[index];
+            quoteItems[index] = quoteItems[index - 1];
+            quoteItems[index - 1] = temp;
+            renderTable();
+            calculateTotals();
+        }
+
+        // 下移指定行
+        function moveRowDown(index) {
+            if (index >= quoteItems.length - 1) return;
+            const temp = quoteItems[index];
+            quoteItems[index] = quoteItems[index + 1];
+            quoteItems[index + 1] = temp;
+            renderTable();
+            calculateTotals();
+        }
+
+        // 工时上下步进（每次 0.5 工时）
+        function adjustLabor(index, delta) {
+            const current = parseFloat(quoteItems[index].labor) || 0;
+            const next = Math.max(0, current + delta);
+            quoteItems[index].labor = String(Math.round(next * 100) / 100);
+            const laborInput = document.getElementById(`item-labor-${index}`);
+            if (laborInput) {
+                laborInput.value = quoteItems[index].labor;
+            }
+        }
+
+        // 数量上下步进（每次 1）
+        function adjustQty(index, delta) {
+            const current = parseFloat(quoteItems[index].qty) || 0;
+            const next = Math.max(0, current + delta);
+            quoteItems[index].qty = String(Math.round(next * 100) / 100);
+            const qtyInput = document.getElementById(`item-qty-${index}`);
+            if (qtyInput) {
+                qtyInput.value = quoteItems[index].qty;
+            }
+            const rowPrice = parseFloat(quoteItems[index].price) || 0;
+            const subtotal = (rowPrice * next).toFixed(2);
+            const subtotalElem = document.getElementById(`subtotal-${index}`);
+            if (subtotalElem) {
+                subtotalElem.innerText = `¥ ${subtotal}`;
+            }
+            calculateTotals();
+        }
+
+        // 单元格数据修改联动
+        function onCellChange(index, field, value) {
+            if (field === 'price' || field === 'qty') {
+                if (value === '') {
+                    quoteItems[index][field] = '';
+                } else {
+                    const num = parseFloat(value);
+                    quoteItems[index][field] = isNaN(num) ? '' : num;
+                }
+            } else {
+                quoteItems[index][field] = value;
+            }
+
+            // 实时更新该行小计显示与整单总额
+            const rowPrice = parseFloat(quoteItems[index].price) || 0;
+            const rowQty = parseFloat(quoteItems[index].qty) || 0;
+            const subtotal = (rowPrice * rowQty).toFixed(2);
+            const subtotalElem = document.getElementById(`subtotal-${index}`);
+            if (subtotalElem) {
+                subtotalElem.innerText = `¥ ${subtotal}`;
+            }
+            calculateTotals();
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = '';
+
+            if (quoteItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--slate-400); padding: 32px;">
+                            暂无报价明细，请点击上方<b>「+ 手动新增一行」</b>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            quoteItems.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const subtotal = ((parseFloat(item.price) || 0) * (parseFloat(item.qty) || 0)).toFixed(2);
+
+                tr.innerHTML = `
+                    <td style="text-align: center; color: var(--slate-500); font-weight: 500;">${index + 1}</td>
+                    <td>
+                        <input type="text" class="cell-input" 
+                            placeholder="输入项目名称"
+                            value="${escapeHtml(item.name)}" 
+                            oninput="onCellChange(${index}, 'name', this.value)">
+                    </td>
+                    <td>
+                        <input type="text" class="cell-input" id="item-model-${index}"
+                            placeholder="车型型号"
+                            value="${escapeHtml(item.model)}" 
+                            oninput="onCellChange(${index}, 'model', this.value)">
+                    </td>
+                    <td>
+                        <div class="labor-stepper">
+                            <input type="text" class="cell-input" id="item-labor-${index}"
+                                value="${escapeHtml(item.labor)}" 
+                                oninput="onCellChange(${index}, 'labor', this.value)">
+                            <div class="labor-stepper-btns">
+                                <button type="button" class="labor-step-btn" title="增加0.5工时" onclick="adjustLabor(${index}, 0.5)">▲</button>
+                                <button type="button" class="labor-step-btn" title="减少0.5工时" onclick="adjustLabor(${index}, -0.5)">▼</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="number" step="any" class="cell-input" style="text-align: right;" 
+                            value="${item.price}" 
+                            oninput="onCellChange(${index}, 'price', this.value)">
+                    </td>
+                    <td>
+                        <div class="labor-stepper">
+                            <input type="text" inputmode="decimal" class="cell-input" id="item-qty-${index}"
+                                value="${item.qty}" 
+                                oninput="onCellChange(${index}, 'qty', this.value)">
+                            <div class="labor-stepper-btns">
+                                <button type="button" class="labor-step-btn" title="增加数量" onclick="adjustQty(${index}, 1)">▲</button>
+                                <button type="button" class="labor-step-btn" title="减少数量" onclick="adjustQty(${index}, -1)">▼</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="cell-input" style="text-align: center;" 
+                            value="${escapeHtml(item.unit)}" 
+                            oninput="onCellChange(${index}, 'unit', this.value)">
+                    </td>
+                    <td class="cell-subtotal" id="subtotal-${index}">¥ ${subtotal}</td>
+                    <td>
+                        <div class="table-action-btns">
+                            <button class="icon-btn" title="上移" onclick="moveRowUp(${index})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                            </button>
+                            <button class="icon-btn" title="下移" onclick="moveRowDown(${index})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <button class="icon-btn icon-btn-danger" title="删除本行" onclick="deleteRow(${index})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 转义 HTML 辅助函数
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // 数字转换为人民币大写金额标准算法
+        function digitToUppercase(n) {
+            n = Math.abs(n);
+            const fraction = ['角', '分'];
+            const digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+            const unit = [
+                ['元', '万', '亿'],
+                ['', '拾', '佰', '仟']
+            ];
+
+            let s = '';
+            for (let i = 0; i < fraction.length; i++) {
+                s += (digit[Math.floor(n * 10 * Math.pow(10, i)) % 10] + fraction[i]).replace(/零./, '');
+            }
+            s = s || '整';
+            n = Math.floor(n);
+            for (let i = 0; i < unit[0].length && n > 0; i++) {
+                let p = '';
+                for (let j = 0; j < unit[1].length && n > 0; j++) {
+                    p = digit[n % 10] + unit[1][j] + p;
+                    n = Math.floor(n / 10);
+                }
+                s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s;
+            }
+            return (s.replace(/(零.)*零元/, '元')
+                    .replace(/(零.)+/g, '零')
+                    .replace(/^整$/, '零元整'));
+        }
+
+        // 计算总金额并更新汇总栏
+        function calculateTotals() {
+            let total = 0;
+            quoteItems.forEach((item) => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseFloat(item.qty) || 0;
+                total += price * qty;
+            });
+
+            const formattedTotal = total.toFixed(2);
+            const uppercaseChinese = total > 0 ? `人民币：${digitToUppercase(total)}` : '人民币：零元整';
+
+            document.getElementById('totalNumberText').innerText = formattedTotal;
+            document.getElementById('totalChineseText').innerText = uppercaseChinese;
+            return { total, formattedTotal, uppercaseChinese };
+        }
+
+        // 构造整张报价单的完整 JSON 数据
+        function getQuotationDataJson() {
+            return {
+                quote_no: document.getElementById('quoteNo').value.trim(),
+                quote_date: document.getElementById('displayQuoteDate').innerText,
+                vehicle: {
+                    plate: getPlateValue(),
+                    model: document.getElementById('carModel').value,
+                    vin: document.getElementById('carVin').value,
+                    color: document.getElementById('carColor').value,
+                    date_in: document.getElementById('dateIn').value,
+                    date_out: document.getElementById('dateOut').value,
+                    mileage: document.getElementById('carMileage').value,
+                    owner_name: document.getElementById('ownerName').value,
+                    owner_phone: document.getElementById('ownerPhone').value
+                },
+                shop: { ...SHOP_INFO },
+                items: quoteItems
+            };
+        }
+
+        // 在导出/打印前，更新隐藏的 A4 打印容器数据
+        function populatePrintableContainer() {
+            const data = getQuotationDataJson();
+            const { formattedTotal, uppercaseChinese } = calculateTotals();
+
+            document.getElementById('viewShopName').innerText = data.shop.name;
+            document.getElementById('viewShopNameSmall').innerText = data.shop.name;
+
+            document.getElementById('viewQuoteNo').innerText = data.quote_no;
+            document.getElementById('viewQuoteDate').innerText = data.quote_date;
+
+            document.getElementById('viewCarPlate').innerText = data.vehicle.plate || '';
+            document.getElementById('viewCarModel').innerText = data.vehicle.model || '';
+            document.getElementById('viewCarVin').innerText = data.vehicle.vin || '';
+            document.getElementById('viewCarColor').innerText = data.vehicle.color || '';
+            document.getElementById('viewDateIn').innerText = data.vehicle.date_in || '';
+            document.getElementById('viewDateOut').innerText = data.vehicle.date_out || '';
+            document.getElementById('viewCarMileage').innerText = data.vehicle.mileage || '';
+            document.getElementById('viewOwnerName').innerText = data.vehicle.owner_name || '';
+            document.getElementById('viewOwnerPhone').innerText = data.vehicle.owner_phone || '';
+
+            // 填充明细清单
+            const viewTbody = document.getElementById('viewItemsTableBody');
+            viewTbody.innerHTML = '';
+
+            data.items.forEach((item, index) => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseFloat(item.qty) || 0;
+                const subtotal = price * qty;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: center; color: #4b5563;">${index + 1}</td>
+                    <td style="font-weight: 500; padding-left: 6px;">${escapeHtml(item.name)}</td>
+                    <td style="text-align: center; font-size: 10.5px;">${escapeHtml(item.model || data.vehicle.model)}</td>
+                    <td style="text-align: center;">${escapeHtml(item.labor)}</td>
+                    <td style="text-align: center;">${qty}</td>
+                    <td style="text-align: center; color: #4b5563;">${escapeHtml(item.unit)}</td>
+                    <td style="text-align: right;">${price.toFixed(2)}</td>
+                    <td style="text-align: right; font-weight: bold; color: #1e3a8a; padding-right: 6px;">${subtotal.toFixed(2)}</td>
+                `;
+                viewTbody.appendChild(tr);
+            });
+
+            document.getElementById('viewTotalNumber').innerText = `¥ ${formattedTotal}`;
+            document.getElementById('viewTotalChinese').innerText = uppercaseChinese.replace(/^人民币：/, '');
+            document.getElementById('viewReceivable').innerText = `¥ ${formattedTotal}`;
+            document.getElementById('viewSettleAmount').innerText = `¥ ${formattedTotal}`;
+            document.getElementById('viewPaidAmount').innerText = `¥ ${formattedTotal}`;
+        }
+
+        // 保存草稿到本地缓存
+        function saveDraft() {
+            try {
+                const data = getQuotationDataJson();
+                localStorage.setItem('quotation_draft_tf', JSON.stringify(data));
+                showToast('已成功暂存到本地草稿箱！');
+            } catch (e) {
+                showToast('保存草稿失败：' + e.message);
+            }
+        }
+
+        // 尝试从本地缓存恢复草稿
+        function loadDraftIfExists() {
+            try {
+                const draft = localStorage.getItem('quotation_draft_tf');
+                if (draft) {
+                    const data = JSON.parse(draft);
+                    if (data.quote_no) document.getElementById('quoteNo').value = data.quote_no;
+                    if (data.vehicle) {
+                        splitPlateToInputs(data.vehicle.plate);
+                        document.getElementById('carModel').value = data.vehicle.model || '';
+                        document.getElementById('carVin').value = data.vehicle.vin || '';
+                        document.getElementById('carColor').value = data.vehicle.color || '';
+                        document.getElementById('dateIn').value = data.vehicle.date_in || '';
+                        document.getElementById('dateOut').value = data.vehicle.date_out || '';
+                        syncSettlementDateDisplay();
+                        document.getElementById('carMileage').value = data.vehicle.mileage || '';
+                        document.getElementById('ownerName').value = data.vehicle.owner_name || '';
+                        document.getElementById('ownerPhone').value = data.vehicle.owner_phone || '';
+                    }
+                    if (Array.isArray(data.items) && data.items.length > 0) {
+                        quoteItems = data.items;
+                        renderTable();
+                        calculateTotals();
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.error('读取草稿失败:', e);
+            }
+            return false;
+        }
+
+        // 载入完整示例数据
+        function loadSampleData() {
+            document.getElementById('quoteNo').value = buildOrderNo();
+            document.getElementById('plateProvince').value = '京';
+            document.getElementById('carPlate').value = 'A·96888';
+            document.getElementById('carModel').value = '宝马 530Li 豪华版';
+            document.getElementById('carVin').value = 'LBV532000P8889999';
+            document.getElementById('carColor').value = '矿石白';
+            document.getElementById('carMileage').value = '56,200 km';
+            document.getElementById('ownerName').value = '李先生';
+            document.getElementById('ownerPhone').value = '139-8888-6666';
+
+            quoteItems = [
+                {
+                    model: '宝马 530Li',
+                    name: '全合成机油 (BMW LongLife-01 5W-30)',
+                    spec: '原厂标准/5L',
+                    labor: '0.5',
+                    price: 460,
+                    qty: 1,
+                    unit: '套',
+                    remark: '宝马原厂长效认证润滑油'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '原厂高效机油滤清器 (机滤)',
+                    spec: '曼牌/原厂配套',
+                    labor: '0.2',
+                    price: 68,
+                    qty: 1,
+                    unit: '个',
+                    remark: '含全新密封圈与垫片'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '空气滤清器 (空滤)',
+                    spec: '高效阻隔粉尘',
+                    labor: '0.2',
+                    price: 85,
+                    qty: 1,
+                    unit: '个',
+                    remark: '原厂配套配件'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '空调双效活性炭滤清器',
+                    spec: 'PM2.5抗过敏型',
+                    labor: '0.3',
+                    price: 135,
+                    qty: 1,
+                    unit: '套',
+                    remark: '建议换季定期保养更换'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '前轮刹车片 (陶瓷静音耐磨套)',
+                    spec: '德国博世原厂级',
+                    labor: '1.0',
+                    price: 480,
+                    qty: 1,
+                    unit: '套',
+                    remark: '含耐磨感应报警线及消音脂'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '节气门拆装深度清洗及电脑匹配',
+                    spec: '专用环保清洗液',
+                    labor: '0.8',
+                    price: 120,
+                    qty: 1,
+                    unit: '次',
+                    remark: '包含清洗后专用诊断电脑怠速学习'
+                },
+                {
+                    model: '宝马 530Li',
+                    name: '定期常规保养工时及全车28项巡检',
+                    spec: '标准作业流程',
+                    labor: '1.0',
+                    price: 80,
+                    qty: 1,
+                    unit: '项',
+                    remark: '全车底盘悬挂/油水/刹车盘片深度体检'
+                }
+            ];
+
+            renderTable();
+            calculateTotals();
+            showToast('已载入北京田丰汽修标准演示工单！');
+        }
+
+        // 清空重置
+        function resetForm() {
+            if (confirm('确定要清空当前所有录入的车辆信息与报价项目吗？')) {
+                document.getElementById('quoteNo').value = buildOrderNo();
+                document.getElementById('plateProvince').value = '';
+                document.getElementById('carPlate').value = '';
+                document.getElementById('carModel').value = '';
+                document.getElementById('carVin').value = '';
+                document.getElementById('carColor').value = '';
+                document.getElementById('carMileage').value = '';
+                document.getElementById('ownerName').value = '';
+                document.getElementById('ownerPhone').value = '';
+                quoteItems = [];
+                renderTable();
+                calculateTotals();
+                showToast('已清空，可重新输入！');
+            }
+        }
+
+        // 打印与导出 PDF（按需组装后调用浏览器打印）
+        function printQuotation() {
+            populatePrintableContainer();
+            window.print();
+        }
+
+        // 浮动通知
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2600);
+        }
+
+        // 页面初始化：所有文本输入框保持空白，仅自动带入日期
+        window.onload = function() {
+            initDatesAndOrderNo();
+            loadDraftIfExists();
+            renderTable();
+        };
+    </script>
+</body>
+</html>
