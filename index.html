@@ -774,7 +774,8 @@
             .card-box {
                 padding: 16px;
             }
-            .form-grid-4 {
+            .form-grid-4,
+            .form-grid-3 {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
@@ -1166,7 +1167,7 @@
                 </svg>
             </div>
             <div>
-                <h1 class="brand-title">北京田丰汽车修理有限责任公司</h1>
+                <h1 class="brand-title">北京鑫祥瑞汽车服务有限责任公司</h1>
                 <p class="brand-desc">车辆维修保养报价系统 · 智能算价 · 规范工单 · 一键导出打印</p>
             </div>
         </div>
@@ -1370,13 +1371,35 @@
 
         </div>
 
+        <!-- 3. 公司信息（用于 PDF 抬头与底部联系方式） -->
+        <div class="card-box">
+            <div class="section-header-title">
+                <span>公司信息</span>
+                <span style="font-size: 12px; font-weight: normal; color: var(--slate-500);">将用于 PDF 抬头与底部联系方式</span>
+            </div>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label class="form-label">公司名称</label>
+                    <input type="text" id="companyName" class="form-input" value="北京鑫祥瑞汽车服务有限责任公司" oninput="syncCompanyBrand(this.value)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">地址</label>
+                    <input type="text" id="companyAddress" class="form-input" value="北京市丰台区大瓦窑782号">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">电话</label>
+                    <input type="text" id="companyPhone" class="form-input" value="13810979552">
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- 专用打印容器（屏幕不显示，仅在 window.print() 时呈现标准 A4 格式） -->
     <div id="printableQuotation">
         <!-- 抬头 -->
         <div class="a4-header">
-            <div class="a4-company-name" id="viewShopName">北京田丰汽车修理有限责任公司</div>
+            <div class="a4-company-name" id="viewShopName">北京鑫祥瑞汽车服务有限责任公司</div>
             <div>
                 <span class="a4-doc-title">结算单</span>
             </div>
@@ -1416,7 +1439,7 @@
             </tr>
             <tr>
                 <td class="label-cell">承修单位</td>
-                <td class="value-cell" colspan="5" id="viewShopNameSmall">北京田丰汽车修理有限责任公司</td>
+                <td class="value-cell" colspan="5" id="viewShopNameSmall">北京鑫祥瑞汽车服务有限责任公司</td>
             </tr>
         </table>
 
@@ -1462,9 +1485,9 @@
 
         <!-- 底部信息 -->
         <div class="a4-footer-plain">
-            <span>地址：北京市丰台区大瓦窑782号</span>
+            <span>地址：<span id="viewShopAddress">北京市丰台区大瓦窑782号</span></span>
             <span>制单人：管理员</span>
-            <span>电话：13810979552</span>
+            <span>电话：<span id="viewShopPhone">13810979552</span></span>
             <span class="client-sign">客户签字：<span class="sign-underline"></span></span>
         </div>
     </div>
@@ -1602,9 +1625,11 @@
         // 核心数据模型：项目明细
         let quoteItems = [];
 
-        // 固定公司信息（页面不再提供设置项，打印与导出统一使用）
+        // 公司信息默认值（可在页面底部表单中修改，用于 PDF 抬头与底部）
         const SHOP_INFO = {
-            name: '北京田丰汽车修理有限责任公司'
+            name: '北京鑫祥瑞汽车服务有限责任公司',
+            address: '北京市丰台区大瓦窑782号',
+            phone: '13810979552'
         };
 
         // 初始化日期与维修单号
@@ -1667,6 +1692,14 @@
         function onColorSelectChange(val) {
             if (val) {
                 document.getElementById('carColor').value = val;
+            }
+        }
+
+        // 同步页面顶部品牌名称（PDF 以公司信息表单为准）
+        function syncCompanyBrand(value) {
+            const title = document.querySelector('.brand-title');
+            if (title) {
+                title.innerText = value.trim() || SHOP_INFO.name;
             }
         }
 
@@ -2250,7 +2283,11 @@
                     owner_name: document.getElementById('ownerName').value,
                     owner_phone: document.getElementById('ownerPhone').value
                 },
-                shop: { ...SHOP_INFO },
+                shop: {
+                    name: document.getElementById('companyName').value.trim() || SHOP_INFO.name,
+                    address: document.getElementById('companyAddress').value.trim(),
+                    phone: document.getElementById('companyPhone').value.trim()
+                },
                 labor_rate: getLaborRate(),
                 items: quoteItems
             };
@@ -2263,6 +2300,8 @@
 
             document.getElementById('viewShopName').innerText = data.shop.name;
             document.getElementById('viewShopNameSmall').innerText = data.shop.name;
+            document.getElementById('viewShopAddress').innerText = data.shop.address;
+            document.getElementById('viewShopPhone').innerText = data.shop.phone;
 
             document.getElementById('viewQuoteNo').innerText = data.quote_no;
             document.getElementById('viewQuoteDate').innerText = data.quote_date;
@@ -2442,7 +2481,7 @@
 
             renderTable();
             calculateTotals();
-            showToast('已载入北京田丰汽修标准演示工单！');
+            showToast('已载入北京鑫祥瑞标准演示工单！');
         }
 
         // 清空重置
@@ -2450,6 +2489,10 @@
             if (confirm('确定要清空当前所有录入的车辆信息与报价项目吗？')) {
                 document.getElementById('quoteNo').value = buildOrderNo();
                 document.getElementById('laborRate').value = '';
+                document.getElementById('companyName').value = SHOP_INFO.name;
+                document.getElementById('companyAddress').value = SHOP_INFO.address;
+                document.getElementById('companyPhone').value = SHOP_INFO.phone;
+                syncCompanyBrand(SHOP_INFO.name);
                 document.getElementById('plateProvince').value = '';
                 document.getElementById('carPlate').value = '';
                 document.getElementById('carModel').value = '';
@@ -2498,6 +2541,10 @@
             if (modal && modal.classList.contains('show')) {
                 fitPdfPreview();
             }
+        });
+
+        window.addEventListener('beforeprint', function() {
+            populatePrintableContainer();
         });
 
         // 页面初始化：所有文本输入框保持空白，仅自动带入日期
