@@ -222,6 +222,40 @@
             border-bottom: 1px solid var(--slate-100);
         }
 
+        .section-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .labor-rate-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--slate-700);
+            white-space: nowrap;
+        }
+
+        .labor-rate-input {
+            width: 80px;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid var(--slate-300);
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: var(--slate-800);
+            background-color: #ffffff;
+        }
+
+        .labor-rate-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+        }
+
         .form-grid-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -328,10 +362,6 @@
             vertical-align: middle;
         }
 
-        .items-editor-table tr:hover {
-            background-color: var(--slate-50);
-        }
-
         .cell-input {
             width: 100%;
             height: 32px;
@@ -340,6 +370,7 @@
             border-radius: 4px;
             font-size: 13px;
             color: var(--slate-800);
+            background-color: #ffffff;
         }
 
         .cell-input:focus {
@@ -489,6 +520,96 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* 添加维修项目弹窗 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.55);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-card {
+            width: min(560px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            line-height: 1;
+            color: var(--slate-500);
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-preview {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            background: var(--slate-50);
+            font-size: 13px;
+            color: var(--slate-700);
+        }
+
+        .modal-preview strong {
+            color: var(--primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--slate-200);
+        }
+
         /* ===== 手机 / 平板适配 ===== */
         @media screen and (max-width: 900px) {
             .top-navbar {
@@ -522,7 +643,7 @@
             }
             .items-editor-table {
                 table-layout: fixed;
-                min-width: 940px;
+                min-width: 1010px;
             }
             .table-scroll-hint {
                 display: block;
@@ -595,6 +716,23 @@
                 flex-wrap: wrap;
                 gap: 8px;
                 font-size: 14.5px;
+            }
+            .section-header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .labor-rate-input {
+                height: 36px;
+                font-size: 16px;
+            }
+            .modal-overlay {
+                padding: 12px;
+            }
+            .modal-grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .modal-footer .btn {
+                flex: 1;
             }
             .order-no-pinned-bar {
                 flex-direction: column;
@@ -706,7 +844,7 @@
                 background: #ffffff !important;
                 color: #000000 !important;
             }
-            .top-navbar, .workbench-container, .toast-msg {
+            .top-navbar, .workbench-container, .toast-msg, .modal-overlay {
                 display: none !important;
             }
             #printableQuotation {
@@ -810,58 +948,36 @@
                 white-space: nowrap;
                 width: 12%;
             }
-            .a4-footer-blocks {
+            .a4-settle-table .a4-settle-note {
+                font-size: 9.5px;
+                line-height: 1.55;
+                color: #333333;
+                text-align: left;
+                padding: 6px 10px;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            .a4-footer-plain {
                 display: flex;
                 justify-content: space-between;
-                gap: 24px;
-                font-size: 10px;
-                line-height: 1.55;
-                margin-bottom: 14px;
+                align-items: flex-end;
+                gap: 12px;
+                margin-top: 20px;
+                font-size: 10.5px;
                 font-family: "Microsoft YaHei", sans-serif;
                 break-inside: avoid;
                 page-break-inside: avoid;
             }
-            .a4-footer-left {
-                width: 56%;
-            }
-            .a4-footer-right {
-                width: 40%;
-            }
-            .a4-footer-company {
-                font-size: 11px;
-                font-weight: bold;
-                margin-bottom: 3px;
-            }
-            .a4-footer-contact {
-                display: flex;
-                gap: 14px;
-                margin-bottom: 6px;
-            }
-            .a4-footer-contact span {
-                flex: 1;
-            }
-            .a4-warranty div {
-                margin-top: 1px;
-            }
-            .a4-signatures-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 30px;
-                margin-top: 24px;
-                font-size: 11.5px;
-                font-family: "Microsoft YaHei", sans-serif;
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-            .sig-line {
+            .a4-footer-plain .client-sign {
                 display: flex;
                 align-items: flex-end;
                 gap: 4px;
+                white-space: nowrap;
             }
-            .sig-underline {
-                flex: 1;
+            .a4-footer-plain .sign-underline {
+                display: inline-block;
+                width: 90px;
+                height: 14px;
                 border-bottom: 1px solid #333333;
-                height: 16px;
             }
             @page {
                 size: A4 portrait;
@@ -1040,11 +1156,17 @@
         <!-- 2. 维修保养项目与配件报价清单（新增车型列、工时列） -->
         <div class="card-box">
             <div class="section-header-title">
-                <span>维修项目与配件报价明细（含车型列、工时列）</span>
-                <button class="btn btn-primary btn-sm" onclick="addNewRow()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    + 手动新增一行
-                </button>
+                <span>维修项目与配件报价明细</span>
+                <div class="section-header-actions">
+                    <label class="labor-rate-label">工时费：
+                        <input type="number" id="laborRate" class="labor-rate-input" min="0" step="0.01" value="0" oninput="onLaborRateChange()">
+                        元/工时
+                    </label>
+                    <button class="btn btn-primary btn-sm" onclick="openItemModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        + 添加项目
+                    </button>
+                </div>
             </div>
 
             <!-- 明细表格 -->
@@ -1054,12 +1176,13 @@
                     <thead>
                         <tr>
                             <th style="width: 44px; text-align: center;">序号</th>
-                            <th style="width: 200px; min-width: 180px;">项目 / 配件名称</th>
-                            <th style="width: 150px;">车型 (自动填入)</th>
+                            <th style="width: 190px; min-width: 180px;">项目 / 配件名称</th>
+                            <th style="width: 140px;">车型 (自动填入)</th>
                             <th style="width: 105px; text-align: center;">工时</th>
                             <th style="width: 90px; text-align: right;">单价 (元)</th>
                             <th style="width: 100px; text-align: center;">数量</th>
                             <th style="width: 60px; text-align: center;">单位</th>
+                            <th style="width: 90px; text-align: right;">工时费 (元)</th>
                             <th style="width: 95px; text-align: right;">小计 (元)</th>
                             <th style="width: 96px; text-align: center;">操作</th>
                         </tr>
@@ -1134,18 +1257,19 @@
             </tr>
         </table>
 
-        <!-- 明细清单（含车型列、工时列） -->
+        <!-- 明细清单 -->
         <table class="a4-items-table">
             <thead>
                 <tr>
                     <th style="width: 40px;">序号</th>
                     <th style="text-align: left; padding-left: 6px;">维修项目 / 配件名称</th>
-                    <th style="width: 110px; text-align: center;">车型</th>
-                    <th style="width: 45px; text-align: center;">工时</th>
-                    <th style="width: 45px; text-align: center;">数量</th>
-                    <th style="width: 40px; text-align: center;">单位</th>
-                    <th style="width: 65px; text-align: right;">单价(元)</th>
-                    <th style="width: 75px; text-align: right; padding-right: 6px;">小计(元)</th>
+                    <th style="width: 100px; text-align: center;">车型</th>
+                    <th style="width: 40px; text-align: center;">工时</th>
+                    <th style="width: 40px; text-align: center;">数量</th>
+                    <th style="width: 36px; text-align: center;">单位</th>
+                    <th style="width: 60px; text-align: right;">单价(元)</th>
+                    <th style="width: 62px; text-align: right;">工时费(元)</th>
+                    <th style="width: 70px; text-align: right; padding-right: 6px;">小计(元)</th>
                 </tr>
             </thead>
             <tbody id="viewItemsTableBody">
@@ -1153,77 +1277,77 @@
             </tbody>
             <tfoot>
                 <tr class="a4-total-row">
-                    <td colspan="6" style="text-align: right; font-size: 11.5px;">材料费小计：</td>
+                    <td style="text-align: center; font-size: 11.5px;">总计</td>
+                    <td colspan="6" style="text-align: left; font-size: 11px; padding-left: 8px;">金额（大写）：<span id="viewTotalChinese" style="color: #b91c1c; font-weight: bold;"></span></td>
                     <td colspan="2" style="text-align: right; font-size: 12.5px; font-weight: bold; color: #b91c1c; padding-right: 6px; white-space: nowrap;" id="viewTotalNumber"></td>
                 </tr>
             </tfoot>
         </table>
 
-        <!-- 结算与收款信息 -->
+        <!-- 结算信息 -->
         <table class="a4-settle-table">
             <tr>
-                <td class="settle-label">付款方式：</td>
-                <td>现金</td>
-                <td class="settle-label">发票类型：</td>
-                <td>收据</td>
-                <td class="settle-label">应收金额：</td>
-                <td style="text-align: right;" id="viewReceivable"></td>
-            </tr>
-            <tr>
-                <td class="settle-label">税　额：</td>
-                <td>¥ 0.00</td>
-                <td class="settle-label">优　惠：</td>
-                <td>¥ 0.00</td>
-                <td class="settle-label">结算金额：</td>
-                <td style="text-align: right;" id="viewSettleAmount"></td>
-            </tr>
-            <tr>
-                <td class="settle-label">结算大写：</td>
-                <td colspan="3" style="color: #b91c1c; background-color: #ffffff;" id="viewTotalChinese"></td>
-                <td class="settle-label">本次结款：</td>
+                <td class="settle-label">欠款金额：</td>
+                <td style="text-align: right;" id="viewDebtAmount"></td>
+                <td class="settle-label">实收金额：</td>
                 <td style="text-align: right;" id="viewPaidAmount"></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="a4-settle-note">（注：该单项目及应付金额经双方核实，客户签字后生效，客户承诺自签字之日起支付清费用。本公司向你承诺：小修15天，二保15天或2000公里，大修3个月1万公里，在正常操作的情况下，质量保证期内发现问题。请速与我们联系。谢谢合作！）</td>
             </tr>
         </table>
 
-        <!-- 公司与保修说明 -->
-        <div class="a4-footer-blocks">
-            <div class="a4-footer-left">
-                <div class="a4-footer-company">北京田丰汽车修理有限责任公司</div>
-                <div class="a4-footer-contact">
-                    <span>地址：</span>
-                    <span>电话：</span>
-                    <span>传真：</span>
-                </div>
-                <div class="a4-warranty">
-                    <div>根据汽车维修行业管理部门规定：</div>
-                    <div>小修或日常维护保修期限：三天或500公里</div>
-                    <div>发动机总成大修保修期限：三个月或10000公里</div>
-                    <div>其它总成大修保修期限：一个月或5000公里</div>
-                    <div>说明：■厂家结算　◆公司结算　●客户结算　▲公司客户对半结算</div>
-                </div>
-            </div>
-            <div class="a4-footer-right">
-                <div>※零件损坏是否更换：□是　□否</div>
-                <div>根据汽车维修行业管理部门的规定：</div>
-                <div>本人对本单以上内容已确认，</div>
-                <div>并愿按上述要求进行维修和支付有关费用，</div>
-                <div>且已将车内现金、票据及贵重物品取走。</div>
-            </div>
+        <!-- 底部信息 -->
+        <div class="a4-footer-plain">
+            <span>地址：北京市丰台区大瓦窑782号</span>
+            <span>制单人：管理员</span>
+            <span>电话：13810979552</span>
+            <span class="client-sign">客户签字：<span class="sign-underline"></span></span>
         </div>
+    </div>
 
-        <!-- 签字栏 -->
-        <div class="a4-signatures-grid">
-            <div class="sig-line">
-                <span>检 验 员：</span>
-                <div class="sig-underline"></div>
+    <!-- 添加维修项目弹窗 -->
+    <div id="itemModal" class="modal-overlay" onclick="onItemModalBackdropClick(event)">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle">
+            <div class="modal-header">
+                <h3 id="itemModalTitle">添加维修项目</h3>
+                <button type="button" class="modal-close" onclick="closeItemModal()" aria-label="关闭">×</button>
             </div>
-            <div class="sig-line">
-                <span>结 算 员：</span>
-                <div class="sig-underline"></div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">项目 / 配件名称</label>
+                    <input type="text" id="modalName" class="form-input">
+                </div>
+                <div class="modal-grid-2">
+                    <div class="form-group">
+                        <label class="form-label">车型</label>
+                        <input type="text" id="modalModel" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">单位</label>
+                        <input type="text" id="modalUnit" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">工时</label>
+                        <input type="number" id="modalLabor" class="form-input" min="0" step="0.5" inputmode="decimal" oninput="updateModalPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">单价 (元)</label>
+                        <input type="number" id="modalPrice" class="form-input" min="0" step="0.01" inputmode="decimal" oninput="updateModalPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数量</label>
+                        <input type="number" id="modalQty" class="form-input" min="0" step="1" inputmode="numeric" value="1" oninput="updateModalPreview()">
+                    </div>
+                </div>
+                <div class="modal-preview">
+                    <span>工时费：<strong id="modalLaborFee">¥0.00</strong></span>
+                    <span>小计：<strong id="modalSubtotal">¥0.00</strong></span>
+                </div>
             </div>
-            <div class="sig-line">
-                <span>客户签字：</span>
-                <div class="sig-underline"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="closeItemModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="submitItemModal()">确认添加</button>
             </div>
         </div>
     </div>
@@ -1343,6 +1467,62 @@
             return document.getElementById('carModel').value || '';
         }
 
+        // 打开添加维修项目弹窗
+        function openItemModal() {
+            document.getElementById('modalName').value = '';
+            document.getElementById('modalModel').value = getCurrentCarModel();
+            document.getElementById('modalLabor').value = '';
+            document.getElementById('modalPrice').value = '';
+            document.getElementById('modalQty').value = '1';
+            document.getElementById('modalUnit').value = '';
+            updateModalPreview();
+            document.getElementById('itemModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('modalName').focus(), 50);
+        }
+
+        // 关闭添加维修项目弹窗
+        function closeItemModal() {
+            document.getElementById('itemModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function onItemModalBackdropClick(event) {
+            if (event.target === document.getElementById('itemModal')) {
+                closeItemModal();
+            }
+        }
+
+        // 弹窗内工时费与小计预览
+        function updateModalPreview() {
+            const labor = parseFloat(document.getElementById('modalLabor').value) || 0;
+            const price = parseFloat(document.getElementById('modalPrice').value) || 0;
+            const qty = parseFloat(document.getElementById('modalQty').value) || 0;
+            const laborFee = labor * getLaborRate();
+            document.getElementById('modalLaborFee').innerText = `¥${laborFee.toFixed(2)}`;
+            document.getElementById('modalSubtotal').innerText = `¥${(price * qty + laborFee).toFixed(2)}`;
+        }
+
+        // 提交弹窗内容
+        function submitItemModal() {
+            const name = document.getElementById('modalName').value.trim();
+            if (!name) {
+                showToast('请输入项目或配件名称');
+                document.getElementById('modalName').focus();
+                return;
+            }
+            addNewRow({
+                name: name,
+                model: document.getElementById('modalModel').value.trim(),
+                labor: document.getElementById('modalLabor').value,
+                price: document.getElementById('modalPrice').value,
+                qty: parseFloat(document.getElementById('modalQty').value) || 1,
+                unit: document.getElementById('modalUnit').value.trim()
+            });
+            closeItemModal();
+            showToast('已添加维修项目');
+        }
+
         // 添加新空白行
         function addNewRow(item = {}) {
             const defaultModel = getCurrentCarModel();
@@ -1387,6 +1567,44 @@
             calculateTotals();
         }
 
+        // 全局工时费（元/工时）
+        function getLaborRate() {
+            const value = parseFloat(document.getElementById('laborRate').value);
+            return isNaN(value) ? 0 : value;
+        }
+
+        function getRowLaborFee(item) {
+            return (parseFloat(item.labor) || 0) * getLaborRate();
+        }
+
+        function getRowSubtotal(item) {
+            const parts = (parseFloat(item.price) || 0) * (parseFloat(item.qty) || 0);
+            return parts + getRowLaborFee(item);
+        }
+
+        // 刷新单行工时费与小计显示
+        function refreshRowTotals(index) {
+            const item = quoteItems[index];
+            if (!item) return;
+            const laborFeeElem = document.getElementById(`laborfee-${index}`);
+            if (laborFeeElem) {
+                laborFeeElem.innerText = `¥ ${getRowLaborFee(item).toFixed(2)}`;
+            }
+            const subtotalElem = document.getElementById(`subtotal-${index}`);
+            if (subtotalElem) {
+                subtotalElem.innerText = `¥ ${getRowSubtotal(item).toFixed(2)}`;
+            }
+        }
+
+        function refreshAllRowTotals() {
+            quoteItems.forEach((item, index) => refreshRowTotals(index));
+            calculateTotals();
+        }
+
+        function onLaborRateChange() {
+            refreshAllRowTotals();
+        }
+
         // 工时上下步进（每次 0.5 工时）
         function adjustLabor(index, delta) {
             const current = parseFloat(quoteItems[index].labor) || 0;
@@ -1396,6 +1614,8 @@
             if (laborInput) {
                 laborInput.value = quoteItems[index].labor;
             }
+            refreshRowTotals(index);
+            calculateTotals();
         }
 
         // 数量上下步进（每次 1）
@@ -1407,12 +1627,7 @@
             if (qtyInput) {
                 qtyInput.value = quoteItems[index].qty;
             }
-            const rowPrice = parseFloat(quoteItems[index].price) || 0;
-            const subtotal = (rowPrice * next).toFixed(2);
-            const subtotalElem = document.getElementById(`subtotal-${index}`);
-            if (subtotalElem) {
-                subtotalElem.innerText = `¥ ${subtotal}`;
-            }
+            refreshRowTotals(index);
             calculateTotals();
         }
 
@@ -1429,14 +1644,8 @@
                 quoteItems[index][field] = value;
             }
 
-            // 实时更新该行小计显示与整单总额
-            const rowPrice = parseFloat(quoteItems[index].price) || 0;
-            const rowQty = parseFloat(quoteItems[index].qty) || 0;
-            const subtotal = (rowPrice * rowQty).toFixed(2);
-            const subtotalElem = document.getElementById(`subtotal-${index}`);
-            if (subtotalElem) {
-                subtotalElem.innerText = `¥ ${subtotal}`;
-            }
+            // 实时更新该行工时费、小计与整单总额
+            refreshRowTotals(index);
             calculateTotals();
         }
 
@@ -1448,8 +1657,8 @@
             if (quoteItems.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="9" style="text-align: center; color: var(--slate-400); padding: 32px;">
-                            暂无报价明细，请点击上方<b>「+ 手动新增一行」</b>
+                        <td colspan="10" style="text-align: center; color: var(--slate-400); padding: 32px;">
+                            暂无报价明细，请点击上方<b>「+ 添加项目」</b>
                         </td>
                     </tr>
                 `;
@@ -1458,19 +1667,18 @@
 
             quoteItems.forEach((item, index) => {
                 const tr = document.createElement('tr');
-                const subtotal = ((parseFloat(item.price) || 0) * (parseFloat(item.qty) || 0)).toFixed(2);
+                const laborFee = getRowLaborFee(item);
+                const subtotal = getRowSubtotal(item).toFixed(2);
 
                 tr.innerHTML = `
                     <td style="text-align: center; color: var(--slate-500); font-weight: 500;">${index + 1}</td>
                     <td>
                         <input type="text" class="cell-input" 
-                            placeholder="输入项目名称"
                             value="${escapeHtml(item.name)}" 
                             oninput="onCellChange(${index}, 'name', this.value)">
                     </td>
                     <td>
                         <input type="text" class="cell-input" id="item-model-${index}"
-                            placeholder="车型型号"
                             value="${escapeHtml(item.model)}" 
                             oninput="onCellChange(${index}, 'model', this.value)">
                     </td>
@@ -1506,6 +1714,7 @@
                             value="${escapeHtml(item.unit)}" 
                             oninput="onCellChange(${index}, 'unit', this.value)">
                     </td>
+                    <td class="cell-laborfee" id="laborfee-${index}" style="text-align: right; color: var(--slate-600); font-weight: 600; white-space: nowrap;">¥ ${laborFee.toFixed(2)}</td>
                     <td class="cell-subtotal" id="subtotal-${index}">¥ ${subtotal}</td>
                     <td>
                         <div class="table-action-btns">
@@ -1564,13 +1773,11 @@
                     .replace(/^整$/, '零元整'));
         }
 
-        // 计算总金额并更新汇总栏
+        // 计算总金额并更新汇总栏（配件金额 + 工时费）
         function calculateTotals() {
             let total = 0;
             quoteItems.forEach((item) => {
-                const price = parseFloat(item.price) || 0;
-                const qty = parseFloat(item.qty) || 0;
-                total += price * qty;
+                total += getRowSubtotal(item);
             });
 
             const formattedTotal = total.toFixed(2);
@@ -1598,6 +1805,7 @@
                     owner_phone: document.getElementById('ownerPhone').value
                 },
                 shop: { ...SHOP_INFO },
+                labor_rate: getLaborRate(),
                 items: quoteItems
             };
         }
@@ -1627,10 +1835,12 @@
             const viewTbody = document.getElementById('viewItemsTableBody');
             viewTbody.innerHTML = '';
 
+            const laborRate = getLaborRate();
             data.items.forEach((item, index) => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseFloat(item.qty) || 0;
-                const subtotal = price * qty;
+                const laborFee = (parseFloat(item.labor) || 0) * laborRate;
+                const subtotal = price * qty + laborFee;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="text-align: center; color: #4b5563;">${index + 1}</td>
@@ -1640,6 +1850,7 @@
                     <td style="text-align: center;">${qty}</td>
                     <td style="text-align: center; color: #4b5563;">${escapeHtml(item.unit)}</td>
                     <td style="text-align: right;">${price.toFixed(2)}</td>
+                    <td style="text-align: right;">${laborFee.toFixed(2)}</td>
                     <td style="text-align: right; font-weight: bold; color: #1e3a8a; padding-right: 6px;">${subtotal.toFixed(2)}</td>
                 `;
                 viewTbody.appendChild(tr);
@@ -1647,9 +1858,8 @@
 
             document.getElementById('viewTotalNumber').innerText = `¥ ${formattedTotal}`;
             document.getElementById('viewTotalChinese').innerText = uppercaseChinese.replace(/^人民币：/, '');
-            document.getElementById('viewReceivable').innerText = `¥ ${formattedTotal}`;
-            document.getElementById('viewSettleAmount').innerText = `¥ ${formattedTotal}`;
             document.getElementById('viewPaidAmount').innerText = `¥ ${formattedTotal}`;
+            document.getElementById('viewDebtAmount').innerText = '¥ 0.00';
         }
 
         // 保存草稿到本地缓存
@@ -1670,6 +1880,7 @@
                 if (draft) {
                     const data = JSON.parse(draft);
                     if (data.quote_no) document.getElementById('quoteNo').value = data.quote_no;
+                    document.getElementById('laborRate').value = data.labor_rate !== undefined ? data.labor_rate : 0;
                     if (data.vehicle) {
                         splitPlateToInputs(data.vehicle.plate);
                         document.getElementById('carModel').value = data.vehicle.model || '';
@@ -1698,6 +1909,7 @@
         // 载入完整示例数据
         function loadSampleData() {
             document.getElementById('quoteNo').value = buildOrderNo();
+            document.getElementById('laborRate').value = 100;
             document.getElementById('plateProvince').value = '京';
             document.getElementById('carPlate').value = 'A·96888';
             document.getElementById('carModel').value = '宝马 530Li 豪华版';
@@ -1789,6 +2001,7 @@
         function resetForm() {
             if (confirm('确定要清空当前所有录入的车辆信息与报价项目吗？')) {
                 document.getElementById('quoteNo').value = buildOrderNo();
+                document.getElementById('laborRate').value = 0;
                 document.getElementById('plateProvince').value = '';
                 document.getElementById('carPlate').value = '';
                 document.getElementById('carModel').value = '';
@@ -1819,6 +2032,12 @@
                 toast.style.display = 'none';
             }, 2600);
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeItemModal();
+            }
+        });
 
         // 页面初始化：所有文本输入框保持空白，仅自动带入日期
         window.onload = function() {
