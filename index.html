@@ -155,6 +155,7 @@
             border: 1px solid var(--slate-200);
             box-shadow: var(--shadow-sm);
             padding: 22px 24px;
+            min-width: 0;
         }
 
         /* 维修单号置顶醒目条 */
@@ -335,6 +336,8 @@
 
         .table-responsive {
             overflow-x: auto;
+            max-width: 100%;
+            min-width: 0;
             border: 1px solid var(--slate-200);
             border-radius: var(--radius-md);
         }
@@ -416,6 +419,24 @@
             background-color: var(--primary-light);
             border-color: #93c5fd;
             color: var(--primary);
+        }
+
+        .modal-stepper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .modal-stepper .form-input {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+
+        .modal-stepper .labor-step-btn {
+            width: 24px;
+            height: 18px;
+            font-size: 9px;
         }
 
         .cell-subtotal {
@@ -610,6 +631,101 @@
             border-top: 1px solid var(--slate-200);
         }
 
+        /* PDF 预览 */
+        .pdf-preview-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 210;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .pdf-preview-overlay.show {
+            display: flex;
+        }
+
+        .pdf-preview-card {
+            width: min(920px, 96vw);
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+        }
+
+        .pdf-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--slate-200);
+            flex-shrink: 0;
+        }
+
+        .pdf-preview-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--slate-900);
+        }
+
+        .pdf-preview-body {
+            flex: 1;
+            min-height: 0;
+            overflow: auto;
+            padding: 16px;
+            background: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .pdf-preview-scale {
+            position: relative;
+            flex-shrink: 0;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .pdf-preview-page {
+            width: 794px;
+            transform-origin: top left;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.2);
+        }
+
+        .pdf-preview-page iframe {
+            display: block;
+            width: 794px;
+            height: 1123px;
+            border: 0;
+            background: #ffffff;
+        }
+
+        .pdf-preview-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 18px;
+            border-top: 1px solid var(--slate-200);
+            flex-shrink: 0;
+        }
+
+        .pdf-preview-tip {
+            font-size: 11.5px;
+            color: var(--slate-500);
+        }
+
+        .pdf-preview-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         /* ===== 手机 / 平板适配 ===== */
         @media screen and (max-width: 900px) {
             .top-navbar {
@@ -673,7 +789,8 @@
 
         @media screen and (max-width: 640px) {
             .top-navbar {
-                position: static;
+                position: sticky;
+                top: 0;
                 padding: 10px 12px;
             }
             .brand-icon {
@@ -691,7 +808,7 @@
                 justify-content: stretch;
             }
             .top-actions .btn {
-                flex: 1 1 calc(33.333% - 6px);
+                flex: 1 1 calc(50% - 4px);
                 padding: 8px 4px;
                 font-size: 12px;
                 gap: 4px;
@@ -734,6 +851,29 @@
             .modal-footer .btn {
                 flex: 1;
             }
+            .pdf-preview-overlay {
+                padding: 8px;
+            }
+            .pdf-preview-card {
+                width: 96vw;
+                height: 94vh;
+            }
+            .pdf-preview-body {
+                padding: 8px;
+            }
+            .pdf-preview-footer {
+                flex-wrap: wrap;
+                padding: 8px 12px;
+            }
+            .pdf-preview-tip {
+                width: 100%;
+            }
+            .pdf-preview-actions {
+                width: 100%;
+            }
+            .pdf-preview-actions .btn {
+                flex: 1;
+            }
             .order-no-pinned-bar {
                 flex-direction: column;
                 align-items: stretch;
@@ -742,11 +882,16 @@
                 margin-bottom: 16px;
             }
             .order-no-left {
-                flex-wrap: wrap;
-                gap: 8px;
+                display: block;
+            }
+            .order-no-badge {
+                display: inline-block;
+                margin-bottom: 8px;
             }
             .order-no-input-wrap {
-                flex: 1 1 100%;
+                display: flex;
+                width: 100%;
+                min-width: 0;
             }
             .order-no-input {
                 flex: 1;
@@ -844,7 +989,7 @@
                 background: #ffffff !important;
                 color: #000000 !important;
             }
-            .top-navbar, .workbench-container, .toast-msg, .modal-overlay {
+            .top-navbar, .workbench-container, .toast-msg, .modal-overlay, .pdf-preview-overlay {
                 display: none !important;
             }
             #printableQuotation {
@@ -1004,17 +1149,13 @@
             </div>
         </div>
         <div class="top-actions">
-            <button class="btn btn-default" onclick="saveDraft()" title="暂存当前录入内容至本地">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                暂存草稿
-            </button>
-            <button class="btn btn-default" onclick="loadSampleData()" title="载入一份完整测试数据">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                载入演示示例
-            </button>
             <button class="btn btn-default" onclick="resetForm()" title="清空全部输入">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 重置清空
+            </button>
+            <button class="btn btn-default" onclick="openPdfPreview()" title="预览 A4 打印版式">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                PDF 预览
             </button>
             <button class="btn btn-primary" onclick="printQuotation()" title="直接打印或在打印预览中选择【另存为PDF】">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -1159,7 +1300,7 @@
                 <span>维修项目与配件报价明细</span>
                 <div class="section-header-actions">
                     <label class="labor-rate-label">工时费：
-                        <input type="number" id="laborRate" class="labor-rate-input" min="0" step="0.01" value="0" oninput="onLaborRateChange()">
+                        <input type="number" id="laborRate" class="labor-rate-input" min="0" step="0.01" oninput="onLaborRateChange()">
                         元/工时
                     </label>
                     <button class="btn btn-primary btn-sm" onclick="openItemModal()">
@@ -1329,7 +1470,13 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">工时</label>
-                        <input type="number" id="modalLabor" class="form-input" min="0" step="0.5" inputmode="decimal" oninput="updateModalPreview()">
+                        <div class="modal-stepper">
+                            <input type="text" id="modalLabor" class="form-input" inputmode="decimal" oninput="updateModalPreview()">
+                            <div class="labor-stepper-btns">
+                                <button type="button" class="labor-step-btn" title="增加0.5工时" onclick="adjustModalLabor(0.5)">▲</button>
+                                <button type="button" class="labor-step-btn" title="减少0.5工时" onclick="adjustModalLabor(-0.5)">▼</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">单价 (元)</label>
@@ -1337,7 +1484,13 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">数量</label>
-                        <input type="number" id="modalQty" class="form-input" min="0" step="1" inputmode="numeric" value="1" oninput="updateModalPreview()">
+                        <div class="modal-stepper">
+                            <input type="text" id="modalQty" class="form-input" inputmode="numeric" value="1" oninput="updateModalPreview()">
+                            <div class="labor-stepper-btns">
+                                <button type="button" class="labor-step-btn" title="增加数量" onclick="adjustModalQty(1)">▲</button>
+                                <button type="button" class="labor-step-btn" title="减少数量" onclick="adjustModalQty(-1)">▼</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-preview">
@@ -1348,6 +1501,30 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" onclick="closeItemModal()">取消</button>
                 <button type="button" class="btn btn-primary" onclick="submitItemModal()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF 预览弹窗 -->
+    <div id="pdfPreviewModal" class="pdf-preview-overlay" onclick="onPdfPreviewBackdropClick(event)">
+        <div class="pdf-preview-card" role="dialog" aria-modal="true" aria-labelledby="pdfPreviewTitle">
+            <div class="pdf-preview-header">
+                <h3 id="pdfPreviewTitle">PDF 预览</h3>
+                <button type="button" class="modal-close" onclick="closePdfPreview()" aria-label="关闭">×</button>
+            </div>
+            <div class="pdf-preview-body" id="pdfPreviewBody">
+                <div class="pdf-preview-scale" id="pdfPreviewScale">
+                    <div class="pdf-preview-page" id="pdfPreviewPage">
+                        <iframe id="pdfPreviewFrame" title="PDF 预览"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="pdf-preview-footer">
+                <span class="pdf-preview-tip">预览为 A4 打印版式，实际 PDF 以浏览器打印结果为准</span>
+                <div class="pdf-preview-actions">
+                    <button type="button" class="btn btn-default" onclick="closePdfPreview()">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="printFromPreview()">打印 / 保存 PDF</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1503,6 +1680,24 @@
             document.getElementById('modalSubtotal').innerText = `¥${(price * qty + laborFee).toFixed(2)}`;
         }
 
+        // 弹窗内工时步进（每次 0.5）
+        function adjustModalLabor(delta) {
+            const input = document.getElementById('modalLabor');
+            const current = parseFloat(input.value) || 0;
+            const next = Math.max(0, current + delta);
+            input.value = String(Math.round(next * 100) / 100);
+            updateModalPreview();
+        }
+
+        // 弹窗内数量步进（每次 1）
+        function adjustModalQty(delta) {
+            const input = document.getElementById('modalQty');
+            const current = parseFloat(input.value) || 1;
+            const next = Math.max(1, current + delta);
+            input.value = String(Math.round(next * 100) / 100);
+            updateModalPreview();
+        }
+
         // 提交弹窗内容
         function submitItemModal() {
             const name = document.getElementById('modalName').value.trim();
@@ -1521,6 +1716,98 @@
             });
             closeItemModal();
             showToast('已添加维修项目');
+        }
+
+        // 提取 @media print 内的样式，用于 A4 预览 iframe
+        function getPrintCss() {
+            for (const sheet of document.styleSheets) {
+                let rules;
+                try {
+                    rules = sheet.cssRules;
+                } catch (e) {
+                    continue;
+                }
+                for (const rule of rules) {
+                    if (rule.type === CSSRule.MEDIA_RULE && rule.media && rule.media.mediaText.includes('print')) {
+                        return Array.from(rule.cssRules).map(r => r.cssText).join('\n');
+                    }
+                }
+            }
+            return '';
+        }
+
+        let pdfPreviewHeight = 1123;
+        let pdfPreviewReady = false;
+
+        function openPdfPreview() {
+            populatePrintableContainer();
+            const printCss = getPrintCss();
+            const printableHtml = document.getElementById('printableQuotation').outerHTML;
+            const frame = document.getElementById('pdfPreviewFrame');
+            const page = document.getElementById('pdfPreviewPage');
+            const scaleWrap = document.getElementById('pdfPreviewScale');
+
+            pdfPreviewHeight = 1123;
+            pdfPreviewReady = false;
+            page.style.height = '1123px';
+            page.style.transform = 'scale(1)';
+            scaleWrap.style.width = '794px';
+            scaleWrap.style.height = '1123px';
+            frame.style.height = '1123px';
+
+            frame.onload = function () {
+                try {
+                    const doc = frame.contentDocument;
+                    const contentHeight = Math.max(
+                        doc.body.scrollHeight,
+                        doc.documentElement.scrollHeight,
+                        1123
+                    );
+                    pdfPreviewHeight = contentHeight;
+                    frame.style.height = contentHeight + 'px';
+                    page.style.height = contentHeight + 'px';
+                    pdfPreviewReady = true;
+                    fitPdfPreview();
+                } catch (e) {
+                    pdfPreviewReady = true;
+                    fitPdfPreview();
+                }
+            };
+
+            frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>*,*::before,*::after{box-sizing:border-box;}html,body{margin:0;padding:0;}${printCss}</style></head><body>${printableHtml}</body></html>`;
+            document.getElementById('pdfPreviewModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            setTimeout(fitPdfPreview, 60);
+        }
+
+        function fitPdfPreview() {
+            if (!pdfPreviewReady) return;
+            const body = document.getElementById('pdfPreviewBody');
+            const scaleWrap = document.getElementById('pdfPreviewScale');
+            const page = document.getElementById('pdfPreviewPage');
+            const style = window.getComputedStyle(body);
+            const horizontalPadding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+            const available = Math.max(160, body.clientWidth - horizontalPadding - 4);
+            const scale = Math.min(1, available / 794);
+            scaleWrap.style.width = `${794 * scale}px`;
+            scaleWrap.style.height = `${pdfPreviewHeight * scale}px`;
+            page.style.transform = `scale(${scale})`;
+        }
+
+        function closePdfPreview() {
+            document.getElementById('pdfPreviewModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function onPdfPreviewBackdropClick(event) {
+            if (event.target === document.getElementById('pdfPreviewModal')) {
+                closePdfPreview();
+            }
+        }
+
+        function printFromPreview() {
+            closePdfPreview();
+            setTimeout(() => window.print(), 120);
         }
 
         // 添加新空白行
@@ -1880,7 +2167,9 @@
                 if (draft) {
                     const data = JSON.parse(draft);
                     if (data.quote_no) document.getElementById('quoteNo').value = data.quote_no;
-                    document.getElementById('laborRate').value = data.labor_rate !== undefined ? data.labor_rate : 0;
+                    const savedRate = data.labor_rate;
+                    const hasSavedRate = savedRate !== undefined && savedRate !== null && savedRate !== '' && Number(savedRate) !== 0;
+                    document.getElementById('laborRate').value = hasSavedRate ? savedRate : '';
                     if (data.vehicle) {
                         splitPlateToInputs(data.vehicle.plate);
                         document.getElementById('carModel').value = data.vehicle.model || '';
@@ -2001,7 +2290,7 @@
         function resetForm() {
             if (confirm('确定要清空当前所有录入的车辆信息与报价项目吗？')) {
                 document.getElementById('quoteNo').value = buildOrderNo();
-                document.getElementById('laborRate').value = 0;
+                document.getElementById('laborRate').value = '';
                 document.getElementById('plateProvince').value = '';
                 document.getElementById('carPlate').value = '';
                 document.getElementById('carModel').value = '';
@@ -2036,13 +2325,20 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeItemModal();
+                closePdfPreview();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const modal = document.getElementById('pdfPreviewModal');
+            if (modal && modal.classList.contains('show')) {
+                fitPdfPreview();
             }
         });
 
         // 页面初始化：所有文本输入框保持空白，仅自动带入日期
         window.onload = function() {
             initDatesAndOrderNo();
-            loadDraftIfExists();
             renderTable();
         };
     </script>
